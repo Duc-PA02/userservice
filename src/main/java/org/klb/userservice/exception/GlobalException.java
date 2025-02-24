@@ -13,6 +13,7 @@ import org.springframework.web.context.request.WebRequest;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 @ControllerAdvice
 @RequiredArgsConstructor
@@ -26,11 +27,14 @@ public class GlobalException {
         Map<String, String> errors = new HashMap<>();
 
         ex.getBindingResult().getFieldErrors().forEach(error -> {
-            String localizedErrorMessage = messageSource.getMessage(error.getDefaultMessage(), null, locale);
+            String localizedErrorMessage = messageSource.getMessage(Objects.requireNonNull(error.getDefaultMessage()), null, locale);
             errors.put(error.getField(), localizedErrorMessage);
         });
 
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ApiResponseWrapper<>(
+                HttpStatus.BAD_REQUEST.value(),
+                errors.toString()),
+                HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DuplicateFieldException.class)
@@ -47,13 +51,5 @@ public class GlobalException {
                 HttpStatus.NOT_FOUND.value(),
                 ex.getMessage()
         ), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException ex) {
-        return new ResponseEntity<>(new ApiResponseWrapper<>(
-                HttpStatus.BAD_REQUEST.value(),
-                ex.getMessage()
-        ), HttpStatus.BAD_REQUEST);
     }
 }

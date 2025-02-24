@@ -12,8 +12,6 @@
 
     <!-- Ghi log ra file, xoay vòng theo ngày -->
     <appender name="DAILY_LOG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_PATH}/application.log</file>
-
         <!-- Xoay vòng log theo ngày -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- Tạo file log theo định dạng ngày -->
